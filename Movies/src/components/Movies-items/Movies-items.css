@@ -1,0 +1,9 @@
+.card {
+  margin-top: 1rem;
+  margin-right: 1rem;
+}
+.cards {
+  display: flex;
+  justify-content: center;
+  flex-flow: row wrap;
+}
