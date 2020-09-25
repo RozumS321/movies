@@ -2,6 +2,14 @@ const initialState = {
   movieInfo: [
 
   ],
-  movieAddError: ''
+  movieAddError: '',
+  moviesCount: 0,
+  paginationPage: 0,
+  filters: {
+    nameSort: 1,
+    searchTitle: '',
+    searchStar: '',
+  }
+
 };
 export default initialState;

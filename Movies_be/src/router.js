@@ -24,6 +24,8 @@ router.post("/movie/add/", async (req, res) => {
 router.get("/movie/", async (req, res) => {
   const starSearch = req.query.stars;
   const titleSearch = req.query.title;
+  const limit = +req.query.limit || 10;
+  const skip = +req.query.skip || 0;
 
   const sort = req.query.sort === "ASC" ? 1 : -1;
   const query = {};
@@ -34,8 +36,15 @@ router.get("/movie/", async (req, res) => {
     query.title = { $regex: titleSearch, $options: "i" };
   }
 
-  const movies = await Movie.find(query).sort({ title: sort });
-  res.json({ movies });
+
+  const [movies, moviesCount] = await Promise.all([
+    Movie.find(query)
+      .limit(limit)
+      .skip(skip)
+      .collation({ locale: "uk" })
+      .sort({ title: sort }),
+    Movie.countDocuments(query)]);
+  res.json({ movies, moviesCount });
 });
 
 router.delete("/movie/:id", async (req, res) => {
@@ -105,7 +114,6 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
   }
 
   const movie = await Movie.create(moviesToCreate);
-  console.log(movie)
 
   res.json({ movie });
 });

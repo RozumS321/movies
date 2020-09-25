@@ -56,7 +56,6 @@ export function movieUpload(movieFile) {
         body: formData,
       })
     ).json();
-    console.log(payload)
     if (payload.error) {
       return dispatch({
         type: constants.MOVIE_ADD_ERROR,
@@ -70,11 +69,11 @@ export function movieUpload(movieFile) {
     });
   };
 }
-export function movieSearch(stars, title, sort = "ASC") {
+export function movieSearch(stars, title, sort = "ASC", limit, skip) {
   return async (dispatch) => {
     const payload = await (
       await fetch(
-        `http://localhost:5000/api/movie/?stars=${stars}&title=${title}&sort=${sort}`,
+        `http://localhost:5000/api/movie/?stars=${stars}&title=${title}&sort=${sort}&limit=${limit}&skip=${skip}`,
         {
           method: "GET",
         }
@@ -84,25 +83,8 @@ export function movieSearch(stars, title, sort = "ASC") {
       type: constants.MOVIE_SEARCH,
       payload: {
         moviesInfo: payload.movies,
+        moviesCount: payload.moviesCount
       },
-    });
-  };
-}
-
-export function fetchMovie() {
-  return async (dispatch) => {
-    const payload = await (
-      await fetch("http://localhost:5000/api/movie/", {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      })
-    ).json();
-
-    dispatch({
-      type: constants.FETCH_TODO_SUCCESS,
-      payload: { moviesInfo: payload.movies },
     });
   };
 }

@@ -22,11 +22,13 @@ export default function movieReducer(state = initialState, action) {
       return {
         ...state,
         movieInfo: action.payload.moviesInfo,
+        moviesCount: action.payload.moviesCount,
       };
     case constants.MOVIE_SEARCH:
       return {
         ...state,
-        movieInfo: [...action.payload.moviesInfo],
+        movieInfo: action.payload.moviesInfo,
+        moviesCount: action.payload.moviesCount,
       };
     case constants.MOVIE_SORT_NAME:
       return {
@@ -37,6 +39,21 @@ export default function movieReducer(state = initialState, action) {
       return {
         ...state,
         movieAddError: action.error
+      }
+    case constants.NAME_SORT:
+      return {
+        ...state,
+        filters: { ...state.filters, nameSort: action.nameSort }
+      }
+    case constants.SEARCH_TITLE:
+      return {
+        ...state,
+        filters: { ...state.filters, searchTitle: action.searchTitle }
+      }
+    case constants.SEARCH_STAR:
+      return {
+        ...state,
+        filters: { ...state.filters, searchStar: action.searchStar }
       }
 
     default:
