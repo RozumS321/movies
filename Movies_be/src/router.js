@@ -10,6 +10,13 @@ const Movie = require("./models/Movies");
 
 router.post("/movie/add/", async (req, res) => {
   const { movieInfo } = req.body;
+  const prevMovie = await Movie.findOne({ title: movieInfo.title, releaseYear: movieInfo.releaseYear, format: movieInfo.format });
+  if (prevMovie && prevMovie.stars.length === movieInfo.stars.length && prevMovie.stars.every((star) => movieInfo.stars.find((s) => s === star))) {
+    res.json({ error: 'Not unique' });
+    return;
+  }
+
+
   const movie = await Movie.create({ ...movieInfo });
   res.json({ movie });
 });
@@ -37,7 +44,7 @@ router.delete("/movie/:id", async (req, res) => {
   res.json({ movies });
 });
 
-router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => { 
+router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
   const { file } = req;
   const fileText = await new Promise((res, rej) => {
     fs.readFile(file.path, (err, data) => {
@@ -79,8 +86,26 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
         continue;
       }
     }
+
+
   }
-  const movie = await Movie.create([...movies]);
+
+  const moviesToCreate = movies.filter(movie => movie.title);
+  try {
+    await Promise.all(moviesToCreate.map(async movie => {
+      const prevMovie = await Movie.findOne({ title: movie.title, releaseYear: movie.releaseYear, format: movie.format });
+      if (prevMovie && prevMovie.stars.length === movie.stars.length && prevMovie.stars.every((star) => movie.stars.find((s) => s === star))) {
+        throw new Error('not unique')
+      }
+    }))
+  }
+  catch (e) {
+    res.json({ error: 'Not unique' });
+    return;
+  }
+
+  const movie = await Movie.create(moviesToCreate);
+  console.log(movie)
 
   res.json({ movie });
 });

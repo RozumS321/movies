@@ -12,11 +12,19 @@ export function movieAdd(movieInfo) {
         body: JSON.stringify({ movieInfo: movieInfo }),
       })
     ).json();
+
+    if (payload.error) {
+      return dispatch({
+        type: constants.MOVIE_ADD_ERROR,
+        error: payload.error
+      })
+
+    }
+
     dispatch({
       type: constants.MOVIE_ADD,
       newMovie: payload,
     });
-    alert("Added");
   };
 }
 export function movieDelete(_id) {
@@ -27,18 +35,15 @@ export function movieDelete(_id) {
       ...state.movieInfo.slice(0, idx),
       ...state.movieInfo.slice(idx + 1),
     ];
-    const conf = confirm("are u sure?");
-    if (conf) {
-      await fetch(`http://localhost:5000/api/movie/${_id}`, {
-        method: "DELETE",
-      });
-      dispatch({
-        type: constants.MOVIE_DELETE,
-        newMovies,
-      });
-    }
-  };
-}
+    await fetch(`http://localhost:5000/api/movie/${_id}`, {
+      method: "DELETE",
+    });
+    dispatch({
+      type: constants.MOVIE_DELETE,
+      newMovies,
+    });
+  }
+};
 
 export function movieUpload(movieFile) {
   return async (dispatch) => {
@@ -51,7 +56,14 @@ export function movieUpload(movieFile) {
         body: formData,
       })
     ).json();
+    console.log(payload)
+    if (payload.error) {
+      return dispatch({
+        type: constants.MOVIE_ADD_ERROR,
+        error: payload.error
+      })
 
+    }
     dispatch({
       type: constants.MOVIE_UPLOAD,
       payload,

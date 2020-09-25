@@ -27,7 +27,7 @@ function MoviesItems({ movieInfo, fetchMovie }) {
   return (
     <Container>
       <MoviesFilter />
-      <div className="cards">{items}</div>
+      {items.length ? <div className="cards">{items}</div> : <div>Not found</div>}
     </Container>
   );
 }

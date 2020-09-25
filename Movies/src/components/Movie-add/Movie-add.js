@@ -1,16 +1,24 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { connect } from "react-redux";
 import * as actions from "../../redux/actions/";
-import { Form, Container, Button } from "react-bootstrap";
+import * as constants from '../../redux/constants/'
+import { Form, Container, Button, Modal } from "react-bootstrap";
 import "./Movie-add.css";
 
 function MovieAdd(props) {
   const [movieInfo, setMovieInfo] = useState({});
+  const [formValid, setFormValid] = useState(null);
+  const formRef = useRef(null);
+
 
   const onValueChange = (type) => {
     return (e) => {
       if (type === "stars") {
         let starsArr = e.target.value.split(",");
+        if (new Set(starsArr).size !== starsArr.length) {
+          return setFormValid(false)
+        }
+        setFormValid(true)
         setMovieInfo({ ...movieInfo, stars: starsArr });
       } else {
         setMovieInfo({ ...movieInfo, [type]: e.target.value });
@@ -18,9 +26,23 @@ function MovieAdd(props) {
     };
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const form = e.currentTarget;
+    if (form.checkValidity() === false || formValid == false) {
+      return;
+    }
+    props.movieAdd(movieInfo)
+    formRef.current.reset();
+    setFormValid(null)
+  }
+
+  const handleClose = () => props.clearMovieAddError()
+
+
   return (
     <Container>
-      <Form className="was-validated">
+      <Form ref={formRef} validated={formValid} onSubmit={handleSubmit}  >
         <Form.Group>
           <Form.Label>Movie Title</Form.Label>
           <Form.Control
@@ -41,16 +63,22 @@ function MovieAdd(props) {
             max="2020"
             required
           />
+          <Form.Control.Feedback type="invalid">
+            min:1850 max:2020
+          </Form.Control.Feedback>
         </Form.Group>
-        <Form.Group>
+        <Form.Group  >
           <Form.Label>Actors</Form.Label>
           <Form.Control
             type="text"
             placeholder="Names of actors"
             onChange={onValueChange("stars")}
-            min="1"
             required
+            isInvalid={formValid === false}
           />
+          <Form.Control.Feedback type="invalid">
+            Please provide a unique actors
+          </Form.Control.Feedback>
           <Form.Text muted>Actor names separated by commas ","</Form.Text>
         </Form.Group>
         <Form.Group>
@@ -85,11 +113,21 @@ function MovieAdd(props) {
         <Button
           variant="primary"
           type="submit"
-          onClick={() => props.movieAdd(movieInfo)}
         >
           ADD
         </Button>
       </Form>
+      <Modal show={!!props.error} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Movie add error</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Movie not unique</Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 }
@@ -97,6 +135,7 @@ function MovieAdd(props) {
 const mapStateToProps = (state) => {
   return {
     movieInfo: state.movieInfo,
+    error: state.movieAddError
   };
 };
 
@@ -104,6 +143,7 @@ function mapDispatchToProps(dispatch) {
   return {
     movieAdd: (movieInfo) => dispatch(actions.movieAdd(movieInfo)),
     movieDelete: (_id) => dispatch(actions.movieDelete(_id)),
+    clearMovieAddError: () => dispatch({ movieAddError: '', type: constants.MOVIE_ADD_ERROR })
   };
 }
 

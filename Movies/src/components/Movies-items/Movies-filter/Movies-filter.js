@@ -26,15 +26,12 @@ function MoviesFilter(props) {
 
   useEffect(() => {
     props.movieSearch(searchText, searchTitle, nameSort ? "ASC" : "DESC");
-  }, [nameSort]);
+  }, [nameSort, searchText, searchTitle]);
 
   return (
     <>
       <Form
         onSubmit={(e) => e.preventDefault()}
-        onChange={() =>
-          props.movieSearch(searchText, searchTitle, nameSort ? "ASC" : "DESC")
-        }
       >
         <FormControl
           type="text"

@@ -33,6 +33,11 @@ export default function movieReducer(state = initialState, action) {
         ...state,
         movieInfo: [...action.payload.movies]
       }
+    case constants.MOVIE_ADD_ERROR:
+      return {
+        ...state,
+        movieAddError: action.error
+      }
 
     default:
       return state;
