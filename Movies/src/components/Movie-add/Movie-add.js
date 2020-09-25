@@ -4,25 +4,19 @@ import * as actions from "../../redux/actions/";
 import { Form, Container, Button } from "react-bootstrap";
 import "./Movie-add.css";
 
-
 function MovieAdd(props) {
   const [movieInfo, setMovieInfo] = useState({});
-  const [sortName, setsSortName] = useState('');
-
 
   const onValueChange = (type) => {
     return (e) => {
-      if (type === 'stars') {
+      if (type === "stars") {
         let starsArr = e.target.value.split(",");
-
         setMovieInfo({ ...movieInfo, stars: starsArr });
       } else {
         setMovieInfo({ ...movieInfo, [type]: e.target.value });
       }
-
     };
   };
-
 
   return (
     <Container>
@@ -33,7 +27,7 @@ function MovieAdd(props) {
             type="text"
             placeholder="Movie title"
             onChange={onValueChange("title")}
-            minLength="1"
+            min="1"
             required
           />
         </Form.Group>
@@ -43,8 +37,8 @@ function MovieAdd(props) {
             type="number"
             placeholder="release date"
             onChange={onValueChange("releaseYear")}
-            minLength="4"
-            maxLength="4"
+            min="1850"
+            max="2020"
             required
           />
         </Form.Group>
@@ -54,7 +48,7 @@ function MovieAdd(props) {
             type="text"
             placeholder="Names of actors"
             onChange={onValueChange("stars")}
-            minLength="1"
+            min="1"
             required
           />
           <Form.Text muted>Actor names separated by commas ","</Form.Text>
@@ -69,6 +63,7 @@ function MovieAdd(props) {
             name="formHorizontalRadios"
             id="formHorizontalRadios1"
             onChange={onValueChange("format")}
+            required
           />
           <Form.Check
             type="radio"
@@ -89,9 +84,8 @@ function MovieAdd(props) {
         </Form.Group>
         <Button
           variant="primary"
-          type="button"
+          type="submit"
           onClick={() => props.movieAdd(movieInfo)}
-        // disabled={disBtn}
         >
           ADD
         </Button>

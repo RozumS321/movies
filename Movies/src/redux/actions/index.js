@@ -16,6 +16,7 @@ export function movieAdd(movieInfo) {
       type: constants.MOVIE_ADD,
       newMovie: payload,
     });
+    alert("Added");
   };
 }
 export function movieDelete(_id) {
@@ -26,12 +27,16 @@ export function movieDelete(_id) {
       ...state.movieInfo.slice(0, idx),
       ...state.movieInfo.slice(idx + 1),
     ];
-
-    await fetch(`http://localhost:5000/api/movie/${_id}`, { method: "DELETE" });
-    dispatch({
-      type: constants.MOVIE_DELETE,
-      newMovies,
-    });
+    const conf = confirm("are u sure?");
+    if (conf) {
+      await fetch(`http://localhost:5000/api/movie/${_id}`, {
+        method: "DELETE",
+      });
+      dispatch({
+        type: constants.MOVIE_DELETE,
+        newMovies,
+      });
+    }
   };
 }
 
@@ -53,26 +58,24 @@ export function movieUpload(movieFile) {
     });
   };
 }
-export function movieSearch(stars, title, sort = 'ASC') {
-
+export function movieSearch(stars, title, sort = "ASC") {
   return async (dispatch) => {
     const payload = await (
-      await fetch(`http://localhost:5000/api/movie/?stars=${stars}&title=${title}&sort=${sort}`, {
-        method: "GET",
-      })
+      await fetch(
+        `http://localhost:5000/api/movie/?stars=${stars}&title=${title}&sort=${sort}`,
+        {
+          method: "GET",
+        }
+      )
     ).json();
-
     dispatch({
       type: constants.MOVIE_SEARCH,
       payload: {
-        moviesInfo: payload.movies
-      }
+        moviesInfo: payload.movies,
+      },
     });
   };
 }
-
-
-
 
 export function fetchMovie() {
   return async (dispatch) => {
@@ -85,10 +88,11 @@ export function fetchMovie() {
       })
     ).json();
 
-
     dispatch({
       type: constants.FETCH_TODO_SUCCESS,
       payload: { moviesInfo: payload.movies },
     });
   };
 }
+
+// SEARCH FIX!!!

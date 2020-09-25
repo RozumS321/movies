@@ -6,7 +6,7 @@ import * as actions from "../../../redux/actions";
 function MoviesFilter(props) {
   const [searchText, setSearchText] = useState("");
   const [searchTitle, setSearchTitle] = useState("");
-  const [nameSort, setNameSort] = useState(false)
+  const [nameSort, setNameSort] = useState(false);
 
   const onChangeValue = () => {
     return (e) => {
@@ -20,21 +20,21 @@ function MoviesFilter(props) {
     };
   };
 
-
   const sortName = () => {
-    setNameSort(!nameSort)
-  }
+    setNameSort(!nameSort);
+  };
 
   useEffect(() => {
-    props.movieSearch(searchText, searchTitle, nameSort ? 'ASC' : 'DESC');
-  }, [nameSort])
-
-
+    props.movieSearch(searchText, searchTitle, nameSort ? "ASC" : "DESC");
+  }, [nameSort]);
 
   return (
     <>
       <Form
         onSubmit={(e) => e.preventDefault()}
+        onChange={() =>
+          props.movieSearch(searchText, searchTitle, nameSort ? "ASC" : "DESC")
+        }
       >
         <FormControl
           type="text"
@@ -49,26 +49,38 @@ function MoviesFilter(props) {
           onChange={onChangeTitleValue()}
         />
 
-
-        <Button variant="primary" onClick={() => props.movieSearch(searchText, searchTitle, nameSort ? 'ASC' : 'DESC')}
+        {/* <Button
+          variant="primary"
+          onSubmit={(e) => e.preventDefault()}
+          onChange={() =>
+            props.movieSearch(
+              searchText,
+              searchTitle,
+              nameSort ? "ASC" : "DESC"
+            )
+          }
+          onClick={() =>
+            props.movieSearch(
+              searchText,
+              searchTitle,
+              nameSort ? "ASC" : "DESC"
+            )
+          }
         >
           Search
-      </Button>
+        </Button> */}
       </Form>
-      <Button variant="primary" className="mr-sm-2" onClick={() => sortName()}
-      >
-        Sort Name
-     </Button>
-
+      <Button variant="primary" className="mr-sm-2" onClick={() => sortName()}>
+        Sort Title
+      </Button>
     </>
-
-
   );
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    movieSearch: (stars, title, sort) => dispatch(actions.movieSearch(stars, title, sort)),
+    movieSearch: (stars, title, sort) =>
+      dispatch(actions.movieSearch(stars, title, sort)),
   };
 };
 export default connect(null, mapDispatchToProps)(MoviesFilter);

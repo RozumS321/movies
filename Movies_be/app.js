@@ -8,7 +8,7 @@ const {
   PORT,
   HOST,
 } = require("./config/default.json")
-console.log(PORT)
+
 async function main() {
   const app = express();
 
@@ -31,6 +31,7 @@ async function main() {
     app.listen(PORT, HOST, (req, res) => {
       console.log(`server has been started on port: ${PORT}`);
     });
+
   } catch (e) {
     console.log("Server eror: " + e.message);
     process.exit(1);

@@ -18,16 +18,16 @@ router.get("/movie/", async (req, res) => {
   const starSearch = req.query.stars;
   const titleSearch = req.query.title;
 
-  const sort = req.query.sort === 'ASC' ? 1 : -1
-  const query = {}
+  const sort = req.query.sort === "ASC" ? 1 : -1;
+  const query = {};
   if (starSearch) {
-    query.stars = { '$regex': starSearch, '$options': 'i' }
+    query.stars = { $regex: starSearch, $options: "i" };
   }
   if (titleSearch) {
-    query.title = { '$regex': titleSearch, '$options': 'i' }
+    query.title = { $regex: titleSearch, $options: "i" };
   }
 
-  const movies = await Movie.find(query).sort({ "title": sort });
+  const movies = await Movie.find(query).sort({ title: sort });
   res.json({ movies });
 });
 
@@ -37,7 +37,7 @@ router.delete("/movie/:id", async (req, res) => {
   res.json({ movies });
 });
 
-router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
+router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => { 
   const { file } = req;
   const fileText = await new Promise((res, rej) => {
     fs.readFile(file.path, (err, data) => {
@@ -59,7 +59,7 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
     } else if (movies[fileCount]) {
       if (fileData[i].startsWith("Title:")) {
         const title = fileData[i].split("Title:")[1].trim();
-        movies[fileCount].title = title.toLowerCase();
+        movies[fileCount].title = title;
         continue;
       }
       if (fileData[i].startsWith("Release Year:")) {
@@ -84,6 +84,5 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
 
   res.json({ movie });
 });
-
 
 module.exports = router;
