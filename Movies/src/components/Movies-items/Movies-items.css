@@ -3,7 +3,7 @@
   margin-right: 1rem;
 }
 
-.cards {
+.cont-mid {
   display: flex;
   justify-content: center;
   flex-flow: row wrap;
@@ -12,4 +12,8 @@
 .notFound {
   font-size: 34px;
   text-transform: uppercase;
+}
+
+.pagination {
+  margin-top: 1rem;
 }
