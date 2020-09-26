@@ -10,6 +10,13 @@ const Movie = require("./models/Movies");
 
 router.post("/movie/add/", async (req, res) => {
   const { movieInfo } = req.body;
+  const prevMovie = await Movie.findOne({ title: movieInfo.title, releaseYear: movieInfo.releaseYear, format: movieInfo.format });
+  if (prevMovie && prevMovie.stars.length === movieInfo.stars.length && prevMovie.stars.every((star) => movieInfo.stars.find((s) => s === star))) {
+    res.json({ error: 'Not unique' });
+    return;
+  }
+
+
   const movie = await Movie.create({ ...movieInfo });
   res.json({ movie });
 });
@@ -17,18 +24,27 @@ router.post("/movie/add/", async (req, res) => {
 router.get("/movie/", async (req, res) => {
   const starSearch = req.query.stars;
   const titleSearch = req.query.title;
+  const limit = +req.query.limit || 10;
+  const skip = +req.query.skip || 0;
 
-  const sort = req.query.sort === 'ASC' ? 1 : -1
-  const query = {}
+  const sort = req.query.sort === "ASC" ? 1 : -1;
+  const query = {};
   if (starSearch) {
-    query.stars = { '$regex': starSearch, '$options': 'i' }
+    query.stars = { $regex: starSearch, $options: "i" };
   }
   if (titleSearch) {
-    query.title = { '$regex': titleSearch, '$options': 'i' }
+    query.title = { $regex: titleSearch, $options: "i" };
   }
 
-  const movies = await Movie.find(query).sort({ "title": sort });
-  res.json({ movies });
+
+  const [movies, moviesCount] = await Promise.all([
+    Movie.find(query)
+      .limit(limit)
+      .skip(skip)
+      .collation({ locale: "uk" })
+      .sort({ title: sort }),
+    Movie.countDocuments(query)]);
+  res.json({ movies, moviesCount });
 });
 
 router.delete("/movie/:id", async (req, res) => {
@@ -59,7 +75,7 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
     } else if (movies[fileCount]) {
       if (fileData[i].startsWith("Title:")) {
         const title = fileData[i].split("Title:")[1].trim();
-        movies[fileCount].title = title.toLowerCase();
+        movies[fileCount].title = title;
         continue;
       }
       if (fileData[i].startsWith("Release Year:")) {
@@ -79,11 +95,27 @@ router.post("/movie/upload/", upload.single("txtFile"), async (req, res) => {
         continue;
       }
     }
+
+
   }
-  const movie = await Movie.create([...movies]);
+
+  const moviesToCreate = movies.filter(movie => movie.title);
+  try {
+    await Promise.all(moviesToCreate.map(async movie => {
+      const prevMovie = await Movie.findOne({ title: movie.title, releaseYear: movie.releaseYear, format: movie.format });
+      if (prevMovie && prevMovie.stars.length === movie.stars.length && prevMovie.stars.every((star) => movie.stars.find((s) => s === star))) {
+        throw new Error('not unique')
+      }
+    }))
+  }
+  catch (e) {
+    res.json({ error: 'Not unique' });
+    return;
+  }
+
+  const movie = await Movie.create(moviesToCreate);
 
   res.json({ movie });
 });
-
 
 module.exports = router;

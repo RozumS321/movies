@@ -2,8 +2,14 @@
   margin-top: 1rem;
   margin-right: 1rem;
 }
+
 .cards {
   display: flex;
   justify-content: center;
   flex-flow: row wrap;
+}
+
+.notFound {
+  font-size: 34px;
+  text-transform: uppercase;
 }

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Form, FormControl, Button } from "react-bootstrap";
 import { connect } from "react-redux";
-import * as actions from "../../../redux/actions";
+import * as constants from "../../../redux/constants";
 
 function MoviesFilter(props) {
-  const [searchText, setSearchText] = useState("");
+  const [searchStar, setSearchText] = useState("");
   const [searchTitle, setSearchTitle] = useState("");
-  const [nameSort, setNameSort] = useState(false)
+  const [nameSort, setNameSort] = useState(false);
 
   const onChangeValue = () => {
     return (e) => {
@@ -20,16 +20,21 @@ function MoviesFilter(props) {
     };
   };
 
-
   const sortName = () => {
-    setNameSort(!nameSort)
-  }
+    setNameSort(!nameSort);
+  };
 
   useEffect(() => {
-    props.movieSearch(searchText, searchTitle, nameSort ? 'ASC' : 'DESC');
-  }, [nameSort])
+    props.nameSort(nameSort);
+  }, [nameSort]);
 
+  useEffect(() => {
+    props.searchStar(searchStar);
+  }, [searchStar]);
 
+  useEffect(() => {
+    props.searchTitle(searchTitle);
+  }, [searchTitle]);
 
   return (
     <>
@@ -49,26 +54,19 @@ function MoviesFilter(props) {
           onChange={onChangeTitleValue()}
         />
 
-
-        <Button variant="primary" onClick={() => props.movieSearch(searchText, searchTitle, nameSort ? 'ASC' : 'DESC')}
-        >
-          Search
-      </Button>
       </Form>
-      <Button variant="primary" className="mr-sm-2" onClick={() => sortName()}
-      >
-        Sort Name
-     </Button>
-
+      <Button variant="primary" className="mr-sm-2" onClick={() => sortName()}>
+        Sort Title
+      </Button>
     </>
-
-
   );
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    movieSearch: (stars, title, sort) => dispatch(actions.movieSearch(stars, title, sort)),
+    searchStar: (star) => dispatch({ type: constants.SEARCH_STAR, searchStar: star }),
+    searchTitle: (title) => dispatch({ type: constants.SEARCH_TITLE, searchTitle: title }),
+    nameSort: (sort) => dispatch({ type: constants.NAME_SORT, nameSort: sort })
   };
 };
 export default connect(null, mapDispatchToProps)(MoviesFilter);

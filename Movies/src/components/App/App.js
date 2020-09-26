@@ -9,11 +9,9 @@ import MovieUpload from "../Movie-uploud/Movie-upload";
 import MovieItems from "../Movies-items/Movies-items";
 import "./App.css";
 
-function App({ fetchMovie }) {
+function App({ }) {
 
-  useEffect(() => {
-    fetchMovie()
-  }, [])
+
 
   return (
     <Router>
@@ -26,9 +24,5 @@ function App({ fetchMovie }) {
     </Router>
   );
 }
-const mapDispatchToProps = (dispatch) => {
-  return {
-    fetchMovie: () => dispatch(actions.fetchMovie()),
-  };
-};
-export default connect(null, mapDispatchToProps)(App);
+
+export default App;
